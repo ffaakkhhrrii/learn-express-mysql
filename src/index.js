@@ -10,6 +10,7 @@ const comicsRoutes = require('./routes/comics.js');
 
 app.use(middleware);
 app.use(express.json());
+app.use(express.static('public/images'));
 
 app.use("/comics",comicsRoutes);
 

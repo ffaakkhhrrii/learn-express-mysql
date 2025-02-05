@@ -1,4 +1,6 @@
 const ComicsModels = require('../models/tb_comics');
+require('dotenv').config()
+const url = process.env.URL;
 
 const getAllComics = async (req,res)=>{
 
@@ -16,27 +18,60 @@ const getAllComics = async (req,res)=>{
     }
 }
 
-const postComic = (req,res)=>{
-    res.json({
-        message: "Post Comic Success",
-        data: req.body
-    });
+const postComic = async (req,res)=>{
+    const {body} = req;
+
+    if(!body.name){
+        res.status(400).json({
+            message: "Harap mengisi data comic terlebih dahulu"
+        });
+    }else{ 
+        try{
+            const imagePath = req.file ? req.file.filename : null;
+            body.image = `${url}${imagePath}`;
+            await ComicsModels.createNewComics(body);
+            res.status(201).json({
+                message: "Create Comic Success",
+                data: body
+            });
+        }catch(error){
+            res.json({
+                message: error
+            });
+        }
+    }
+    
 }
 
-const updateComics = (req,res)=>{
+const updateComics = async (req,res)=>{
     const {idComics}  = req.params;
-    console.log("id : "+ idComics);
-    res.json({
-        message : "Update Comic success"
-    });
+    const {body} = req;
+    try{
+        const imagePath = req.file ? req.file.filename : null;
+        body.image = `${url}${imagePath}`;
+        await ComicsModels.updateComics(body,idComics);
+        res.status(201).json({
+            message: `Update Comic ${body.name} Success`,
+        });
+    }catch(error){
+        res.json({
+            message: error
+        });
+    }
 }
 
-const deleteComics = (req,res)=>{
+const deleteComics = async (req,res)=>{
     const {idComics}  = req.params;
-    console.log("comics delete, id : "+ idComics);
-    res.json({
-        message : "Delete Comic success"
-    });
+    try{
+        await ComicsModels.deleteComic(idComics);
+        res.json({
+            message: `Delete Comic Success`,
+        });
+    }catch(error){
+        res.json({
+            message: error,
+        });
+    }
 }
 
 module.exports = {
