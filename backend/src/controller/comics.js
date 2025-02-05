@@ -1,6 +1,4 @@
 const ComicsModels = require('../models/tb_comics');
-require('dotenv').config()
-const url = process.env.URL;
 
 const getAllComics = async (req,res)=>{
 
@@ -28,7 +26,7 @@ const postComic = async (req,res)=>{
     }else{ 
         try{
             const imagePath = req.file ? req.file.filename : null;
-            body.image = `${url}${imagePath}`;
+            body.image = imagePath;
             await ComicsModels.createNewComics(body);
             res.status(201).json({
                 message: "Create Comic Success",
@@ -48,7 +46,7 @@ const updateComics = async (req,res)=>{
     const {body} = req;
     try{
         const imagePath = req.file ? req.file.filename : null;
-        body.image = `${url}${imagePath}`;
+        body.image = imagePath;
         await ComicsModels.updateComics(body,idComics);
         res.status(201).json({
             message: `Update Comic ${body.name} Success`,
